@@ -1,0 +1,34 @@
+{
+  "name": "ai-spend-audit",
+  "version": "1.0.0",
+  "description": "Production-ready SaaS scaffold for a Next.js 15 App Router application using TypeScript, Tailwind, shadcn, MongoDB Atlas, Mongoose, Zustand persist, Zod, and Resend.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+"scripts": {
+  "dev": "next dev",
+  "build": "next build",
+  "start": "next start"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coderirfannn/ai-spend-audit.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/coderirfannn/ai-spend-audit/issues"
+  },
+  "homepage": "https://github.com/coderirfannn/ai-spend-audit#readme",
+  "dependencies": {
+    "@types/node": "^25.9.1",
+    "@types/react": "^19.2.15",
+    "next": "^16.2.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "typescript": "^6.0.3"
+  }
+}
