@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { connectToDatabase, ShareResultModel } from "@/services/database";
 
@@ -50,9 +49,15 @@ type ShareSnapshot = {
 };
 
 async function getShareReport(id: string): Promise<ShareSnapshot | null> {
-  await connectToDatabase();
+  try {
+    await connectToDatabase();
 
-  return (await ShareResultModel.findOne().where("shareId").equals(id).lean()) as ShareSnapshot | null;
+    return (await ShareResultModel.findOne().where("shareId").equals(id).lean()) as ShareSnapshot | null;
+  } catch (error) {
+    // Database is unavailable or misconfigured; let the page fall back to a safe empty state.
+    console.error("Failed to load share snapshot:", error);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -96,7 +101,34 @@ export default async function SharePage({ params }: SharePageProps) {
   const report = await getShareReport(id);
 
   if (!report) {
-    notFound();
+    return (
+      <main className="relative mx-auto max-w-6xl px-6 py-10 sm:px-8 lg:px-12 lg:py-16">
+        <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl sm:p-8 lg:p-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-200/80">Share snapshot</p>
+          <h1 className="mt-4 font-display text-4xl tracking-tight text-white sm:text-5xl">Snapshot unavailable</h1>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
+            The shared report could not be loaded right now. The database may be offline or the snapshot may not exist yet.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/results"
+              className="inline-flex items-center justify-center rounded-full bg-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300"
+            >
+              View results
+            </Link>
+            <Link
+              href="/audit"
+              className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Back to audit
+            </Link>
+          </div>
+
+          <p className="mt-6 text-xs uppercase tracking-[0.2em] text-slate-500">Snapshot ID: {id}</p>
+        </section>
+      </main>
+    );
   }
 
   return (

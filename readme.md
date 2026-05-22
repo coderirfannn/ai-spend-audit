@@ -1,65 +1,50 @@
-# AI Spend Audit Architecture
+# AI Spend Audit
 
-Production-ready SaaS scaffold for a Next.js 15 App Router application using TypeScript, Tailwind, shadcn, MongoDB Atlas, Mongoose, Zustand persist, Zod, and Resend.
+Lightweight SaaS scaffold that helps teams audit AI tool spend. Implemented with the App Router, TypeScript, TailwindCSS, React Hook Form + Zod, Zustand (persist), and optional MongoDB-backed sharing.
 
-## Core Routes
+Quick start
 
-- `/` landing experience
-- `/audit` audit intake flow
-- `/results` results experience
-- `/share/[id]` public share page
+- Install dependencies:
 
-## Folder Strategy
-
-Feature-first organization keeps domain logic together and separates it from route shells, shared UI, services, and infrastructure concerns.
-
-```text
-src/
-  app/
-    (marketing)/
-    audit/
-    results/
-    share/[id]/
-  features/
-    landing/
-    audit/
-    results/
-    share/
-  services/
-    audit-engine/
-    summary/
-    lead-capture/
-    email/
-  components/
-    ui/
-    shared/
-  lib/
-  config/
-  env/
-  hooks/
-  stores/
-  schemas/
-  types/
-  styles/
-
-tests/
-  unit/
-  integration/
-  e2e/
-  fixtures/
+```bash
+npm install
 ```
 
-## Service Layer
+- Local dev server:
 
-- `audit-engine`: computes audit findings and scoring
-- `summary`: transforms findings into concise results copy
-- `lead-capture`: validates and persists lead submissions
-- `email`: sends transactional and follow-up email
+```bash
+npm run dev
+```
 
-## Environment Structure
+- Production build:
 
-Use a single `.env.example` as the source of truth for runtime configuration and keep validation logic in `src/env/`.
+```bash
+npm run build
+npm start
+```
 
-## TypeScript
+Tests
 
-`tsconfig.json` is set up for strict mode and safer compiler defaults so the eventual implementation can stay predictable as the codebase grows.
+- Unit tests run with Vitest:
+
+```bash
+npm run test
+```
+
+Environment variables
+
+See `.env.example` for the canonical list. Important variables:
+- `MONGODB_URI` and `MONGODB_DB` — required for DB-backed share/results and lead capture. If `MONGODB_URI` is not set the app will render a safe "Snapshot unavailable" fallback for share routes.
+- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL` — email notifications (optional, required for email flow).
+- `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SHARE_BASE_URL` — used to construct public links.
+
+Files changed during stabilization
+- `src/features/audit/audit-spend-form.tsx` — fixed hydration/persist loop and numeric registration
+- `src/app/results/page.tsx` — added results route shell
+- `src/app/share/[id]/page.tsx` — added DB error handling and graceful fallback
+- `tsconfig.json` — added `ignoreDeprecations` to silence TS deprecation diagnostics
+
+Notes
+
+- The app uses the Next.js version declared in `package.json` in this workspace. Confirm that CI/staging uses a compatible Node and Next.js version.
+- For production readiness, wire a real MongoDB URI and an email provider; the app will not crash without them but DB-backed features will show fallbacks.
