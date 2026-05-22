@@ -4,6 +4,10 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { defaultAuditFormValues, type AuditFormValues } from "@/schemas/audit-form";
 
+function isSameDraft(left: AuditFormValues, right: AuditFormValues): boolean {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
 interface AuditFormStore {
   draft: AuditFormValues;
   hydrated: boolean;
@@ -17,8 +21,8 @@ export const useAuditFormStore = create<AuditFormStore>()(
     (set) => ({
       draft: defaultAuditFormValues,
       hydrated: false,
-      setDraft: (draft) => set({ draft }),
-      resetDraft: () => set({ draft: defaultAuditFormValues }),
+      setDraft: (draft) => set((state) => (isSameDraft(state.draft, draft) ? {} : { draft })),
+      resetDraft: () => set((state) => (isSameDraft(state.draft, defaultAuditFormValues) ? {} : { draft: defaultAuditFormValues })),
       setHydrated: (hydrated) => set({ hydrated }),
     }),
     {

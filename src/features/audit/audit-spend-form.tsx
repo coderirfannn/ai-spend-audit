@@ -42,7 +42,7 @@ export function AuditSpendForm() {
     if (hydrated) {
       form.reset(draft);
     }
-  }, [draft, form, hydrated]);
+  }, [form, hydrated]);
 
   useEffect(() => {
     const subscription = form.watch((values) => {

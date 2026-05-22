@@ -5,6 +5,7 @@ import Link from "next/link";
 import { auditEngine } from "@/services/audit-engine";
 import { buildFallbackSummary } from "@/services/summary/fallback";
 import { useAuditFormStore } from "@/stores/use-audit-form-store";
+import { LeadCaptureForm } from "./lead-capture-form";
 
 function money(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -184,6 +185,22 @@ export function ResultDashboard() {
               ))}
             </ul>
             <p className="mt-5 text-sm font-medium text-slate-200">{summary.ctaHint}</p>
+          </div>
+        ) : null}
+
+        {summary ? (
+          <div className="mt-8">
+            <LeadCaptureForm
+              result={result}
+              summary={summary}
+              teamSize={draft.teamSize}
+              tools={draft.tools.map((tool) => ({
+                tool: tool.tool,
+                plan: tool.plan,
+                spend: tool.monthlySpend,
+                seats: tool.seats,
+              }))}
+            />
           </div>
         ) : null}
 
