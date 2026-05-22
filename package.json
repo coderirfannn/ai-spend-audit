@@ -6,11 +6,11 @@
   "directories": {
     "test": "tests"
   },
-"scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "start": "next start"
-},
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/coderirfannn/ai-spend-audit.git"
@@ -24,11 +24,23 @@
   },
   "homepage": "https://github.com/coderirfannn/ai-spend-audit#readme",
   "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
     "@types/node": "^25.9.1",
     "@types/react": "^19.2.15",
+    "autoprefixer": "^10.5.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.16.0",
+    "mongoose": "^9.6.2",
     "next": "^16.2.6",
+    "postcss": "^8.5.15",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "typescript": "^6.0.3"
+    "react-hook-form": "^7.76.0",
+    "resend": "^6.12.3",
+    "tailwind-merge": "^3.6.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.13"
   }
 }
