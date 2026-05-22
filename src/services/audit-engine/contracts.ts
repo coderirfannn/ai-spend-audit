@@ -1,22 +1,51 @@
-export type AuditSeverity = "low" | "medium" | "high" | "critical";
-export type AuditCategory = "tracking" | "attribution" | "waste" | "anomaly" | "opportunity";
+export type AuditRecommendationType =
+  | "right-size-seats"
+  | "downgrade-plan"
+  | "consolidate-vendor"
+  | "use-case-alternative";
 
-export interface AuditInput {
-  companyName: string;
-  websiteUrl?: string;
-  platformIds?: string[];
-  spendWindowDays?: number;
+export type AuditFindingSeverity = "low" | "medium" | "high";
+
+export interface AuditToolInput {
+  tool: string;
+  plan: string;
+  spend: number;
+  seats: number;
+}
+
+export interface AuditEngineInput {
+  tools: AuditToolInput[];
+  teamSize: number;
+  useCase: string;
 }
 
 export interface AuditFinding {
-  category: AuditCategory;
-  severity: AuditSeverity;
+  tool: string;
+  type: AuditRecommendationType;
+  severity: AuditFindingSeverity;
   title: string;
   detail: string;
+  monthlySavings: number;
+  annualSavings: number;
 }
 
-export interface AuditResult {
-  score: number;
+export interface AuditRecommendation {
+  tool: string;
+  recommendedTool: string;
+  recommendedPlan: string;
+  rationale: string;
+  monthlySpend: number;
+  monthlySavings: number;
+  annualSavings: number;
+  alternatives: string[];
+}
+
+export interface AuditEngineResult {
+  monthlySpend: number;
+  annualSpend: number;
+  monthlySavings: number;
+  annualSavings: number;
+  reasoning: string[];
   findings: AuditFinding[];
-  generatedAt: string;
+  recommendations: AuditRecommendation[];
 }
