@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
@@ -18,6 +19,8 @@ function FieldError({ message }: { message: string | undefined }) {
 }
 
 export function AuditSpendForm() {
+  const router = useRouter();
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const draft = useAuditFormStore((state) => state.draft);
   const hydrated = useAuditFormStore((state) => state.hydrated);
   const setDraft = useAuditFormStore((state) => state.setDraft);
@@ -76,7 +79,13 @@ export function AuditSpendForm() {
   const onSubmit = form.handleSubmit((values) => {
     const parsed = auditFormSchema.safeParse(values);
     if (parsed.success) {
+      setSaveState("saving");
       setDraft(parsed.data);
+      setSaveState("saved");
+      // Debug: confirm handler fired in browser
+      // eslint-disable-next-line no-console
+      console.log("Audit form submitted", parsed.data);
+      void router.push("/results");
     }
   });
 

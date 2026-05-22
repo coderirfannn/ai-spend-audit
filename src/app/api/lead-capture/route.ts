@@ -39,7 +39,11 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ ok: true, data: result }, { status: 201 });
-  } catch {
+  } catch (error) {
+    // Log the real error server-side for diagnostics (safe in dev).
+    // eslint-disable-next-line no-console
+    console.error("/api/lead-capture error:", error);
+
     return NextResponse.json(
       {
         ok: false,
