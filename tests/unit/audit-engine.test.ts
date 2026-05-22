@@ -40,3 +40,28 @@ test("suggests alternatives aligned to use case", () => {
   assert.ok(result.recommendations[0]?.alternatives.length > 0);
   assert.ok(result.monthlySavings >= 0);
 });
+
+test("rejects invalid inputs", () => {
+  assert.throws(() => {
+    analyzeAuditSpend({
+      teamSize: 0,
+      useCase: "",
+      tools: [],
+    });
+  });
+});
+
+test("handles duplicate tools deterministically", () => {
+  const result = analyzeAuditSpend({
+    teamSize: 6,
+    useCase: "coding",
+    tools: [
+      { tool: "Copilot", plan: "Pro", spend: 40, seats: 2 },
+      { tool: "Copilot", plan: "Pro", spend: 40, seats: 2 },
+    ],
+  });
+
+  assert.equal(result.recommendations.length, 2);
+  assert.equal(result.monthlySpend, 80);
+  assert.ok(result.annualSavings >= 0);
+});

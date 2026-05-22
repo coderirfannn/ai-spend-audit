@@ -42,12 +42,17 @@ export function AuditSpendForm() {
     if (hydrated) {
       form.reset(draft);
     }
-  }, [form, hydrated]);
+  }, [draft, form, hydrated]);
 
   useEffect(() => {
     const subscription = form.watch((values) => {
-      if (hydrated && values.tools?.length) {
-        setDraft(values as AuditFormValues);
+      if (!hydrated) {
+        return;
+      }
+
+      const parsed = auditFormSchema.safeParse(values);
+      if (parsed.success) {
+        setDraft(parsed.data);
       }
     });
 
@@ -68,8 +73,11 @@ export function AuditSpendForm() {
     form.reset(defaultAuditFormValues);
   };
 
-  const onSubmit = form.handleSubmit(() => {
-    setDraft(form.getValues() as AuditFormValues);
+  const onSubmit = form.handleSubmit((values) => {
+    const parsed = auditFormSchema.safeParse(values);
+    if (parsed.success) {
+      setDraft(parsed.data);
+    }
   });
 
   if (!hydrated) {

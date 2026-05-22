@@ -25,9 +25,9 @@ export interface SummaryPromptBundle {
 }
 
 export interface SummaryProviderResponse {
-  headline: string;
-  subheadline: string;
-  bullets: string[];
+  headline?: string;
+  subheadline?: string;
+  bullets?: string[];
   ctaHint?: string;
 }
 

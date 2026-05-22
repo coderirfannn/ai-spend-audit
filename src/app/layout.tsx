@@ -17,6 +17,17 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "AI Spend Audit",
   description: "See hidden AI savings instantly.",
+  metadataBase: new URL("http://localhost:3000"),
+  openGraph: {
+    title: "AI Spend Audit",
+    description: "See hidden AI savings instantly.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AI Spend Audit",
+    description: "See hidden AI savings instantly.",
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={`${manrope.variable} ${spaceGrotesk.variable} bg-slate-950 text-slate-50 antialiased`}>
         {children}
       </body>

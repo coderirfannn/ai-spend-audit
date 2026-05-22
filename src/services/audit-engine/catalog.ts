@@ -11,7 +11,20 @@ export interface ToolCatalogEntry {
   useCases: string[];
 }
 
-export const toolCatalog = {
+export const supportedToolNames = [
+  "Cursor",
+  "Copilot",
+  "Claude",
+  "ChatGPT",
+  "OpenAI API",
+  "Anthropic API",
+  "Gemini",
+  "Windsurf",
+] as const;
+
+export type SupportedToolName = (typeof supportedToolNames)[number];
+
+export const toolCatalog: Record<SupportedToolName, ToolCatalogEntry> = {
   Cursor: {
     vendor: "Cursor",
     plans: [
@@ -92,7 +105,9 @@ export const toolCatalog = {
   },
 } as const satisfies Record<string, ToolCatalogEntry>;
 
-export type SupportedToolName = keyof typeof toolCatalog;
+function isSupportedToolName(tool: string): tool is SupportedToolName {
+  return supportedToolNames.some((supportedTool) => supportedTool === tool);
+}
 
 const useCaseToolMap: Record<string, SupportedToolName[]> = {
   coding: ["Cursor", "Copilot", "Windsurf"],
@@ -115,7 +130,11 @@ export function normalizeText(value: string): string {
 }
 
 export function getPlanIndex(tool: string, plan: string): number {
-  const catalog = toolCatalog[tool as SupportedToolName];
+  if (!isSupportedToolName(tool)) {
+    return -1;
+  }
+
+  const catalog = toolCatalog[tool];
   if (!catalog) {
     return -1;
   }
@@ -125,7 +144,11 @@ export function getPlanIndex(tool: string, plan: string): number {
 }
 
 export function getCatalogEntry(tool: string): ToolCatalogEntry | undefined {
-  return toolCatalog[tool as SupportedToolName];
+  if (!isSupportedToolName(tool)) {
+    return undefined;
+  }
+
+  return toolCatalog[tool];
 }
 
 export function getCheaperPlan(tool: string, plan: string): PlanTier | null {

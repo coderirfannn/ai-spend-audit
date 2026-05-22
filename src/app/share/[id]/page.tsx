@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+export const metadata = {
+  title: "Shared Audit | AI Spend Audit",
+  description: "Review a shared AI spend audit snapshot.",
+};
+
 interface SharePageProps {
   params: Promise<{ id: string }>;
 }

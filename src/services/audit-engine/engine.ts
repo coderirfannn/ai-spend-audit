@@ -35,22 +35,6 @@ function severityForSavings(monthlySavings: number): AuditFindingSeverity {
   return "low";
 }
 
-function recommendationTypeFor(tool: AuditToolInput, teamSize: number, cheaperPlanExists: boolean, useCaseAlternativeExists: boolean): AuditRecommendationType {
-  if (tool.seats > teamSize) {
-    return "right-size-seats";
-  }
-
-  if (cheaperPlanExists) {
-    return "downgrade-plan";
-  }
-
-  if (useCaseAlternativeExists) {
-    return "use-case-alternative";
-  }
-
-  return "consolidate-vendor";
-}
-
 function summarizeUseCaseAlternatives(useCase: string, currentTool: string): string[] {
   return getUseCaseAlternatives(useCase, currentTool).slice(0, 3);
 }

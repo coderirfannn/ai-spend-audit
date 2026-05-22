@@ -1,3 +1,5 @@
+import "server-only";
+
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { SummaryInput, SummaryOutput, SummaryProvider, SummaryProviderResponse } from "./contracts";
@@ -16,23 +18,25 @@ function interpolateUserPrompt(template: string, input: SummaryInput): string {
 }
 
 export async function generateFounderSummary(input: SummaryInput, provider?: SummaryProvider): Promise<SummaryOutput> {
-  const prompts = {
-    systemPrompt: loadPrompt("system.md"),
-    userPrompt: interpolateUserPrompt(loadPrompt("user.md"), input),
-  };
-
-  if (!provider) {
-    return buildFallbackSummary(input);
-  }
-
   try {
+    const prompts = {
+      systemPrompt: loadPrompt("system.md"),
+      userPrompt: interpolateUserPrompt(loadPrompt("user.md"), input),
+    };
+
+    if (!provider) {
+      return buildFallbackSummary(input);
+    }
+
     const response: SummaryProviderResponse = await provider(input, prompts);
+    const fallback = buildFallbackSummary(input);
+    const bullets = Array.isArray(response.bullets) && response.bullets.length > 0 ? response.bullets.slice(0, 5) : fallback.bullets;
 
     return {
-      headline: response.headline.trim() || buildFallbackSummary(input).headline,
-      subheadline: response.subheadline.trim() || buildFallbackSummary(input).subheadline,
-      bullets: response.bullets.length > 0 ? response.bullets.slice(0, 5) : buildFallbackSummary(input).bullets,
-      ctaHint: response.ctaHint?.trim() || buildFallbackSummary(input).ctaHint,
+      headline: response.headline?.trim() || fallback.headline,
+      subheadline: response.subheadline?.trim() || fallback.subheadline,
+      bullets,
+      ctaHint: response.ctaHint?.trim() || fallback.ctaHint,
       generatedBy: "ai",
     };
   } catch {
