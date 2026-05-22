@@ -6,7 +6,7 @@ Inputs:
 - Monthly savings: {{MONTHLY_SAVINGS}}
 - Annual savings: {{ANNUAL_SAVINGS}}
 
-Return:
+Return :
 - A short headline
 - A subheadline
 - Three to five bullets
