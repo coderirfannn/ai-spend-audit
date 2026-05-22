@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { auditEngine } from "@/services/audit-engine";
+import { buildFallbackSummary } from "@/services/summary/fallback";
 import { useAuditFormStore } from "@/stores/use-audit-form-store";
 
 function money(value: number): string {
@@ -70,6 +71,26 @@ export function ResultDashboard() {
       return null;
     }
   }, [draft]);
+
+  const summary = useMemo(() => {
+    if (!result) {
+      return null;
+    }
+
+    return buildFallbackSummary({
+      tools: draft.tools.map((tool) => ({
+        tool: tool.tool,
+        plan: tool.plan,
+        spend: tool.monthlySpend,
+        seats: tool.seats,
+      })),
+      recommendations: result.recommendations,
+      savings: {
+        monthlySavings: result.monthlySavings,
+        annualSavings: result.annualSavings,
+      },
+    });
+  }, [draft.tools, result]);
 
   if (!hydrated) {
     return (
@@ -141,6 +162,30 @@ export function ResultDashboard() {
           <ResultStat label="Current monthly spend" value={money(result.monthlySpend)} />
           <ResultStat label="Projected annual spend" value={money(result.annualSpend)} />
         </div>
+
+        {summary ? (
+          <div className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-5 backdrop-blur-xl sm:p-6">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-3xl">
+                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200/80">Founder summary</p>
+                <h2 className="mt-3 font-display text-2xl text-white sm:text-3xl">{summary.headline}</h2>
+                <p className="mt-3 text-sm leading-7 text-slate-300 sm:text-base">{summary.subheadline}</p>
+              </div>
+              <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
+                {summary.generatedBy === "ai" ? "AI generated" : "Fallback template"}
+              </div>
+            </div>
+            <ul className="mt-5 space-y-3">
+              {summary.bullets.map((bullet) => (
+                <li key={bullet} className="flex gap-3 text-sm leading-7 text-slate-300 sm:text-base">
+                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-300" />
+                  <span>{bullet}</span>
+                </li>
+              ))}
+            </ul>
+            <p className="mt-5 text-sm font-medium text-slate-200">{summary.ctaHint}</p>
+          </div>
+        ) : null}
 
         {showCredexConsultation ? (
           <div className="mt-8 rounded-[1.75rem] border border-amber-300/20 bg-amber-300/10 p-5 backdrop-blur-xl sm:p-6">
