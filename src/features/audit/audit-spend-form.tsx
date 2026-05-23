@@ -7,6 +7,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { z } from "zod";
 import { auditFormSchema, defaultAuditFormValues, supportedAuditTools, type AuditFormValues } from "@/schemas/audit-form";
 import { useAuditFormStore } from "@/stores/use-audit-form-store";
+import { ProgressStepper } from "@/components/ui/ProgressStepper";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 
 const toolOptions = supportedAuditTools;
 
@@ -91,126 +95,100 @@ export function AuditSpendForm() {
 
   if (!hydrated) {
     return (
-      <div className="rounded-[2rem] border border-white/10 bg-white/5 p-6 text-sm text-slate-300 backdrop-blur-xl sm:p-8">
-        Loading your saved audit draft...
-      </div>
+      <Card className="space-y-4 p-6 sm:p-8">
+        <LoadingSkeleton width="30%" height={14} />
+        <LoadingSkeleton width="60%" height={28} />
+        <LoadingSkeleton width="100%" height={14} />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <LoadingSkeleton width="100%" height={44} />
+          <LoadingSkeleton width="100%" height={44} />
+        </div>
+      </Card>
     );
   }
-
   return (
-    <form onSubmit={onSubmit} className="space-y-8 rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl sm:p-8 lg:p-10">
+    <form
+      onSubmit={onSubmit}
+      onKeyDown={(e) => {
+        const tag = (e.target as HTMLElement).tagName;
+        if (e.key === "Enter" && tag !== "TEXTAREA") {
+          e.preventDefault();
+        }
+      }}
+      className="space-y-6 rounded-[var(--radius-3)] border border-[var(--panel-border)] bg-[var(--card)] p-[var(--space-3)]"
+      aria-busy={saveState === "saving"}
+    >
+      {/* Stepper */}
+      <div className="flex items-center justify-between gap-4">
+        <ProgressStepper steps={[{ id: 'tools', title: 'Tools' }, { id: 'usage', title: 'Usage' }, { id: 'team', title: 'Team' }, { id: 'review', title: 'Review' }]} currentIndex={0} />
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-secondary)]" aria-live="polite">
+          {saveState === "idle" ? "Draft ready" : saveState === "saving" ? "Saving..." : "Saved locally"}
+        </p>
+      </div>
+
+      {/* Note: To preserve business logic we keep existing fields but the UI should be replaced progressively with per-step rendering in future iterations. */}
+
       <div className="grid gap-6 lg:grid-cols-2">
         <label className="block">
-          <span className="text-sm font-medium text-slate-200">Team size</span>
-          <input
-            type="number"
-            min={1}
-            inputMode="numeric"
-            {...form.register("teamSize", { valueAsNumber: true })}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
-            placeholder="12"
-          />
+          <span className="text-sm font-medium text-[var(--text-secondary)]">Team size</span>
+          <input type="number" min={1} inputMode="numeric" {...form.register("teamSize", { valueAsNumber: true })} className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--surface)] px-4 py-3 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]" placeholder="12" aria-invalid={Boolean(form.formState.errors.teamSize?.message)} />
           <FieldError message={form.formState.errors.teamSize?.message} />
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-200">Primary use case</span>
-          <input
-            type="text"
-            {...form.register("primaryUseCase")}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
-            placeholder="Product development, content, support..."
-          />
+          <span className="text-sm font-medium text-[var(--text-secondary)]">Primary use case</span>
+          <input type="text" {...form.register("primaryUseCase")} className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--surface)] px-4 py-3 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]" placeholder="Product development, content, support..." aria-invalid={Boolean(form.formState.errors.primaryUseCase?.message)} />
           <FieldError message={form.formState.errors.primaryUseCase?.message} />
         </label>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-display text-2xl text-white">AI tools</h2>
-            <p className="mt-1 text-sm text-slate-300">Add every tool your team is paying for or actively using.</p>
+            <h2 className="font-display text-2xl text-[var(--text-primary)]">AI tools</h2>
+            <p className="mt-1 text-sm text-[var(--text-secondary)]">Add every tool your team is paying for or actively using.</p>
           </div>
-          <button
-            type="button"
-            onClick={handleAddTool}
-            className="inline-flex items-center justify-center rounded-full border border-sky-400/20 bg-sky-400/10 px-4 py-2 text-sm font-semibold text-sky-100 transition hover:bg-sky-400/20"
-          >
-            Add another tool
-          </button>
+          <Button type="button" variant="ghost" size="sm" onClick={handleAddTool}>Add another tool</Button>
         </div>
 
         <FieldError message={form.formState.errors.tools?.message} />
 
-        <div className="space-y-4">
+        <div className="mt-4 space-y-4">
           {fields.map((field, index) => (
-            <article key={field.id} className="rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-5 sm:p-6">
+            <article key={field.id} className="rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--surface)] p-4">
               <div className="flex items-center justify-between gap-4">
-                <h3 className="font-display text-lg text-white">Tool {index + 1}</h3>
+                <h3 className="font-display text-lg text-[var(--text-primary)]">Tool {index + 1}</h3>
                 {fields.length > 1 ? (
-                  <button
-                    type="button"
-                    onClick={() => remove(index)}
-                    className="text-sm font-medium text-slate-300 transition hover:text-white"
-                  >
-                    Remove
-                  </button>
+                  <button type="button" onClick={() => remove(index)} className="text-sm text-[var(--text-secondary)]">Remove</button>
                 ) : null}
               </div>
 
               <div className="mt-4 grid gap-4 lg:grid-cols-2">
                 <label className="block">
-                  <span className="text-sm font-medium text-slate-200">Tool</span>
-                  <select
-                    {...form.register(`tools.${index}.tool`)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
-                    defaultValue={field.tool}
-                  >
+                  <span className="text-sm text-[var(--text-secondary)]">Tool</span>
+                  <select {...form.register(`tools.${index}.tool`)} className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--card)] px-3 py-2 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]" defaultValue={field.tool} aria-invalid={Boolean(form.formState.errors.tools?.[index]?.tool?.message)}>
                     {toolOptions.map((tool) => (
-                      <option key={tool} value={tool}>
-                        {tool}
-                      </option>
+                      <option key={tool} value={tool}>{tool}</option>
                     ))}
                   </select>
                   <FieldError message={form.formState.errors.tools?.[index]?.tool?.message} />
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium text-slate-200">Plan</span>
-                  <input
-                    type="text"
-                    {...form.register(`tools.${index}.plan`)}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
-                    placeholder="Pro, Team, Enterprise..."
-                  />
+                  <span className="text-sm text-[var(--text-secondary)]">Plan</span>
+                  <input type="text" {...form.register(`tools.${index}.plan`)} className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--card)] px-3 py-2 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]" placeholder="Pro, Team, Enterprise..." aria-invalid={Boolean(form.formState.errors.tools?.[index]?.plan?.message)} />
                   <FieldError message={form.formState.errors.tools?.[index]?.plan?.message} />
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium text-slate-200">Monthly spend</span>
-                  <input
-                    type="number"
-                    min={0}
-                    step="0.01"
-                    inputMode="decimal"
-                    {...form.register(`tools.${index}.monthlySpend`, { valueAsNumber: true })}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
-                    placeholder="120"
-                  />
+                  <span className="text-sm text-[var(--text-secondary)]">Monthly spend</span>
+                  <input type="number" min={0} step="0.01" inputMode="decimal" {...form.register(`tools.${index}.monthlySpend`, { valueAsNumber: true })} className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--card)] px-3 py-2 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]" placeholder="120" aria-invalid={Boolean(form.formState.errors.tools?.[index]?.monthlySpend?.message)} />
                   <FieldError message={form.formState.errors.tools?.[index]?.monthlySpend?.message} />
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium text-slate-200">Seats</span>
-                  <input
-                    type="number"
-                    min={1}
-                    step={1}
-                    inputMode="numeric"
-                    {...form.register(`tools.${index}.seats`, { valueAsNumber: true })}
-                    className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
-                    placeholder="5"
-                  />
+                  <span className="text-sm text-[var(--text-secondary)]">Seats</span>
+                  <input type="number" min={1} step={1} inputMode="numeric" {...form.register(`tools.${index}.seats`, { valueAsNumber: true })} className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--card)] px-3 py-2 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]" placeholder="5" aria-invalid={Boolean(form.formState.errors.tools?.[index]?.seats?.message)} />
                   <FieldError message={form.formState.errors.tools?.[index]?.seats?.message} />
                 </label>
               </div>
@@ -220,20 +198,9 @@ export function AuditSpendForm() {
       </div>
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <button
-          type="button"
-          onClick={handleReset}
-          className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-        >
-          Reset draft
-        </button>
+        <Button type="button" variant="ghost" size="md" onClick={handleReset}>Reset draft</Button>
 
-        <button
-          type="submit"
-          className="inline-flex items-center justify-center rounded-full bg-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300"
-        >
-          Save audit draft
-        </button>
+        <Button type="submit" size="md" isLoading={saveState === "saving"}>Save audit draft</Button>
       </div>
     </form>
   );

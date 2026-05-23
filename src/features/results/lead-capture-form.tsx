@@ -6,6 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { SummaryOutput } from "@/services/summary/contracts";
 import type { AuditEngineResult } from "@/services/audit-engine/contracts";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { LoadingSkeleton } from "@/components/ui/LoadingSkeleton";
 
 const leadCaptureFormSchema = z.object({
   email: z.string().trim().email("Enter a valid work email."),
@@ -113,24 +116,24 @@ export function LeadCaptureForm({ result, summary, teamSize, tools }: LeadCaptur
   });
 
   return (
-    <section className="rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-5 backdrop-blur-xl sm:p-6">
+    <Card className="p-5 sm:p-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200/80">Lead capture</p>
-          <h2 className="mt-3 font-display text-2xl text-white sm:text-3xl">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[var(--accent-muted)]">Lead capture</p>
+          <h2 className="mt-3 font-display text-2xl text-[var(--text-primary)] sm:text-3xl">
             Send the audit to your inbox
           </h2>
-          <p className="mt-3 text-sm leading-7 text-slate-300 sm:text-base">
+          <p className="mt-3 text-sm leading-7 text-[var(--text-secondary)] sm:text-base">
             Capture the report after the audit only. We’ll store the lead, email the summary, and create a shareable report link.
           </p>
         </div>
 
-        <div className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${isHighSavings ? "border-amber-300/20 bg-amber-300/10 text-amber-100" : "border-emerald-300/20 bg-emerald-300/10 text-emerald-100"}`}>
+        <div className={`rounded-full border px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] ${isHighSavings ? "border-[var(--warning)]/20 bg-[var(--warning)]/10 text-[var(--warning)]" : "border-[var(--success)]/20 bg-[var(--success)]/10 text-[var(--success)]"}`}>
           {isHighSavings ? "High savings notification" : "Standard report email"}
         </div>
       </div>
 
-      <form onSubmit={onSubmit} className="mt-6 grid gap-4 lg:grid-cols-3">
+      <form onSubmit={onSubmit} className="mt-6 grid gap-4 lg:grid-cols-3" aria-busy={status === "submitting"} aria-live="polite">
         <input
           type="text"
           tabIndex={-1}
@@ -141,65 +144,72 @@ export function LeadCaptureForm({ result, summary, teamSize, tools }: LeadCaptur
         />
 
         <label className="block lg:col-span-1">
-          <span className="text-sm font-medium text-slate-200">Email</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">Email</span>
           <input
             type="email"
             autoComplete="email"
             {...form.register("email")}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
+            className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--surface)] px-4 py-3 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow,transform] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
             placeholder="founder@company.com"
+            aria-invalid={Boolean(form.formState.errors.email?.message)}
           />
-          <p className="mt-2 text-sm text-rose-300">{form.formState.errors.email?.message}</p>
+          <p className="mt-2 text-sm text-[var(--danger)]">{form.formState.errors.email?.message}</p>
         </label>
 
         <label className="block lg:col-span-1">
-          <span className="text-sm font-medium text-slate-200">Company</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">Company</span>
           <input
             type="text"
             autoComplete="organization"
             {...form.register("company")}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
+            className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--surface)] px-4 py-3 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow,transform] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
             placeholder="Acme Inc."
+            aria-invalid={Boolean(form.formState.errors.company?.message)}
           />
-          <p className="mt-2 text-sm text-rose-300">{form.formState.errors.company?.message}</p>
+          <p className="mt-2 text-sm text-[var(--danger)]">{form.formState.errors.company?.message}</p>
         </label>
 
         <label className="block lg:col-span-1">
-          <span className="text-sm font-medium text-slate-200">Role</span>
+          <span className="text-sm font-medium text-[var(--text-primary)]">Role</span>
           <input
             type="text"
             autoComplete="organization-title"
             {...form.register("role")}
-            className="mt-2 w-full rounded-2xl border border-white/10 bg-slate-950/70 px-4 py-3 text-white shadow-inner shadow-black/20 outline-none transition focus:border-sky-300"
+            className="mt-2 w-full rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--surface)] px-4 py-3 text-[var(--text-primary)] outline-none transition-[border-color,box-shadow,transform] duration-[var(--motion-default)] focus-visible:border-[var(--focus-ring)] focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
             placeholder="Founder"
+            aria-invalid={Boolean(form.formState.errors.role?.message)}
           />
-          <p className="mt-2 text-sm text-rose-300">{form.formState.errors.role?.message}</p>
+          <p className="mt-2 text-sm text-[var(--danger)]">{form.formState.errors.role?.message}</p>
         </label>
 
         <div className="lg:col-span-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-slate-400">Monthly savings: <span className="font-semibold text-slate-100">{money(result.monthlySavings)}</span></p>
-          <button
+          <p className="text-sm text-[var(--text-secondary)]">Monthly savings: <span className="font-semibold text-[var(--text-primary)]">{money(result.monthlySavings)}</span></p>
+          <Button
             type="submit"
-            disabled={status === "submitting"}
-            className="inline-flex items-center justify-center rounded-full bg-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
+            isLoading={status === "submitting"}
           >
             {ctaLabel}
-          </button>
+          </Button>
         </div>
 
         {message ? (
-          <div className={`lg:col-span-3 rounded-2xl border p-4 text-sm ${status === "error" ? "border-rose-300/20 bg-rose-300/10 text-rose-50" : "border-emerald-300/20 bg-emerald-300/10 text-emerald-50"}`}>
-            {message}
-            {reportLink ? (
-              <div className="mt-2">
-                <a href={reportLink} className="font-semibold text-white underline underline-offset-4">
-                  Open report link
-                </a>
+          <div role={status === "error" ? "alert" : "status"} className={`lg:col-span-3 rounded-[var(--radius-2)] border p-4 text-sm ${status === "error" ? "border-[var(--danger)]/20 bg-[var(--danger)]/10 text-[var(--text-primary)]" : "border-[var(--success)]/20 bg-[var(--success)]/10 text-[var(--text-primary)]"}`}>
+            <div className="flex items-start gap-3">
+              {status === "submitting" ? <LoadingSkeleton width={12} height={12} rounded="full" /> : null}
+              <div>
+                <p>{message}</p>
+                {reportLink ? (
+                  <div className="mt-2">
+                    <a href={reportLink} className="font-semibold text-[var(--text-primary)] underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]">
+                      Open report link
+                    </a>
+                  </div>
+                ) : null}
               </div>
-            ) : null}
+            </div>
           </div>
         ) : null}
       </form>
-    </section>
+    </Card>
   );
 }

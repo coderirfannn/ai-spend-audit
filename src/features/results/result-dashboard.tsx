@@ -2,10 +2,28 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { TrustSystemSection } from "@/components/shared/trust-system-section";
+import dynamic from "next/dynamic";
 import { auditEngine } from "@/services/audit-engine";
 import { buildFallbackSummary } from "@/services/summary/fallback";
 import { useAuditFormStore } from "@/stores/use-audit-form-store";
-import { LeadCaptureForm } from "./lead-capture-form";
+
+const LeadCaptureForm = dynamic(() => import("./lead-capture-form").then((module) => module.LeadCaptureForm), {
+  ssr: false,
+  loading: () => (
+    <Card>
+      <p className="text-sm font-semibold text-[var(--text-secondary)]">Lead capture</p>
+      <div className="mt-4 space-y-3">
+        <div className="h-10 rounded-[var(--radius-2)] bg-[var(--surface)] animate-pulse" />
+        <div className="h-10 rounded-[var(--radius-2)] bg-[var(--surface)] animate-pulse" />
+        <div className="h-10 rounded-[var(--radius-2)] bg-[var(--surface)] animate-pulse" />
+      </div>
+    </Card>
+  ),
+});
 
 function money(value: number): string {
   return new Intl.NumberFormat("en-US", {
@@ -37,9 +55,9 @@ function ClipboardButton({ text, label }: { text: string; label: string }) {
 
 function ResultStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-[1.5rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-      <p className="text-sm font-medium text-slate-300">{label}</p>
-      <p className="mt-2 font-display text-3xl text-white sm:text-4xl">{value}</p>
+    <div className="rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--card)] p-[var(--space-3)]">
+      <p className="text-sm font-medium text-[var(--text-secondary)]">{label}</p>
+      <p className="mt-2 font-display text-3xl text-[var(--text-primary)] sm:text-4xl">{value}</p>
     </div>
   );
 }
@@ -136,161 +154,181 @@ export function ResultDashboard() {
 
   return (
     <main className="relative mx-auto max-w-7xl px-6 py-10 sm:px-8 lg:px-12 lg:py-16">
-      <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 backdrop-blur-2xl sm:p-8 lg:p-10">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-          <div className="max-w-3xl">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-200/80">Results</p>
-            <h1 className="mt-4 font-display text-4xl tracking-tight text-white sm:text-5xl">Your AI spend summary</h1>
-            <p className="mt-4 max-w-2xl text-base leading-7 text-slate-300 sm:text-lg">
-              A shareable, rule-based summary of your current spend, recommended changes, and expected savings.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <ClipboardButton text={shareText} label="Copy summary" />
-            <Link
-              href="/audit"
-              className="inline-flex items-center justify-center rounded-full bg-sky-400 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-300"
-            >
-              Back to audit
-            </Link>
-          </div>
-        </div>
-
-        <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          <ResultStat label="Monthly savings" value={money(result.monthlySavings)} />
-          <ResultStat label="Annual savings" value={money(result.annualSavings)} />
-          <ResultStat label="Current monthly spend" value={money(result.monthlySpend)} />
-          <ResultStat label="Projected annual spend" value={money(result.annualSpend)} />
-        </div>
-
-        {summary ? (
-          <div className="mt-8 rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-5 backdrop-blur-xl sm:p-6">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-              <div className="max-w-3xl">
-                <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200/80">Founder summary</p>
-                <h2 className="mt-3 font-display text-2xl text-white sm:text-3xl">{summary.headline}</h2>
-                <p className="mt-3 text-sm leading-7 text-slate-300 sm:text-base">{summary.subheadline}</p>
+      <section className="space-y-6">
+        {/* Savings hero */}
+        <Card>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="text-sm font-semibold uppercase tracking-wide text-[var(--text-secondary)]">Savings</p>
+              <div className="mt-2 flex items-end gap-6">
+                <div>
+                  <div className="text-4xl font-display text-[var(--text-primary)]">{money(result.monthlySavings)}</div>
+                  <p className="text-sm text-[var(--text-secondary)]">Monthly</p>
+                </div>
+                <div>
+                  <div className="text-2xl font-display text-[var(--text-primary)]">{money(result.annualSavings)}</div>
+                  <p className="text-sm text-[var(--text-secondary)]">Annual</p>
+                </div>
+                <div>
+                  <Badge tone={summary?.generatedBy === "ai" ? "default" : "muted"}>{summary?.generatedBy === "ai" ? "AI generated" : "Template"}</Badge>
+                </div>
               </div>
-              <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200">
-                {summary.generatedBy === "ai" ? "AI generated" : "Fallback template"}
-              </div>
+              <p className="mt-3 text-sm text-[var(--text-secondary)]">{summary?.subheadline}</p>
             </div>
-            <ul className="mt-5 space-y-3">
-              {summary.bullets.map((bullet) => (
-                <li key={bullet} className="flex gap-3 text-sm leading-7 text-slate-300 sm:text-base">
-                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-sky-300" />
-                  <span>{bullet}</span>
-                </li>
+
+            <div className="flex gap-3">
+              <ClipboardButton text={shareText} label="Copy summary" />
+              <Link href="/audit" className="inline-flex items-center justify-center rounded-[var(--radius-2)] bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-[var(--text-primary)]">Back to audit</Link>
+            </div>
+          </div>
+        </Card>
+
+        {/* Insights & trends */}
+        <div className="grid gap-4 lg:grid-cols-3">
+          <Card>
+            <p className="text-sm font-semibold text-[var(--text-secondary)]">Founder summary</p>
+            <h3 className="mt-2 font-display text-lg text-[var(--text-primary)]">{summary?.headline}</h3>
+            <ul className="mt-3 space-y-2 text-sm text-[var(--text-secondary)]">
+              {summary?.bullets.map((b) => (
+                <li key={b} className="flex gap-2"><span className="mt-1 h-2 w-2 rounded-full bg-[var(--accent)]" />{b}</li>
               ))}
             </ul>
-            <p className="mt-5 text-sm font-medium text-slate-200">{summary.ctaHint}</p>
-          </div>
-        ) : null}
+          </Card>
 
-        {summary ? (
-          <div className="mt-8">
-            <LeadCaptureForm
-              result={result}
-              summary={summary}
-              teamSize={draft.teamSize}
-              tools={draft.tools.map((tool) => ({
-                tool: tool.tool,
-                plan: tool.plan,
-                spend: tool.monthlySpend,
-                seats: tool.seats,
-              }))}
-            />
-          </div>
-        ) : null}
-
-        {showCredexConsultation ? (
-          <div className="mt-8 rounded-[1.75rem] border border-amber-300/20 bg-amber-300/10 p-5 backdrop-blur-xl sm:p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-amber-100/90">Credex consultation</p>
-            <h2 className="mt-3 font-display text-2xl text-white">Savings above $500 monthly deserve a deeper review</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-amber-50/90 sm:text-base">
-              You have enough savings potential to justify a structured consultation on consolidation, pricing, and rollout strategy.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-3">
-              <Link
-                href="/audit"
-                className="inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-slate-100"
-              >
-                Book Credex consultation
-              </Link>
+          <Card>
+            <p className="text-sm font-semibold text-[var(--text-secondary)]">Cost trend</p>
+            <div className="mt-3 h-20">
+              <svg viewBox="0 0 200 40" width="100%" height="100%" preserveAspectRatio="none" aria-hidden>
+                {/* simple synthetic trend */}
+                <path d={`M0 30 L50 ${20} L100 ${15} L150 ${10} L200 ${12}`} stroke="var(--accent)" strokeWidth="2" fill="none" />
+              </svg>
             </div>
+          </Card>
+
+          <Card>
+            <p className="text-sm font-semibold text-[var(--text-secondary)]">Current spend</p>
+            <div className="mt-2 text-lg text-[var(--text-primary)]">{money(result.monthlySpend)} / mo</div>
+            <p className="mt-3 text-sm text-[var(--text-secondary)]">Projected annual: {money(result.annualSpend)}</p>
+          </Card>
+        </div>
+
+        {/* Top opportunities */}
+        <div>
+          <h2 className="font-display text-2xl text-[var(--text-primary)]">Top opportunities</h2>
+          <div className="mt-4 grid gap-4 lg:grid-cols-3">
+            {result.recommendations
+              .slice()
+              .sort((a, b) => b.monthlySavings - a.monthlySavings)
+              .slice(0, 3)
+              .map((rec) => (
+                <Card key={rec.tool} className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-sm text-[var(--text-secondary)]">{rec.tool}</p>
+                      <h3 className="font-display text-lg text-[var(--text-primary)]">{rec.recommendedTool}</h3>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-lg font-semibold text-[var(--text-primary)]">{money(rec.monthlySavings)}/mo</div>
+                      <p className="text-sm text-[var(--text-secondary)]">Estimated</p>
+                    </div>
+                  </div>
+
+                  <div className="mt-3 text-sm text-[var(--text-secondary)]">{rec.rationale}</div>
+
+                  <div className="mt-3 flex gap-2">
+                    <Button variant="ghost" size="sm">View plan</Button>
+                    <Button variant="primary" size="sm">Apply change</Button>
+                  </div>
+                </Card>
+              ))}
           </div>
+        </div>
+
+        {/* Per-tool accordions */}
+        <div>
+          <h2 className="font-display text-2xl text-[var(--text-primary)] mt-6">Recommendations & details</h2>
+          <div className="mt-4 space-y-3">
+            {result.recommendations.map((recommendation, index) => {
+              const finding = result.findings.find((item) => item.tool === recommendation.tool) ?? null;
+
+              return (
+                <details key={`${recommendation.tool}-${index}`} className="group rounded-[var(--radius-2)] border border-[var(--panel-border)] bg-[var(--card)] p-4">
+                  <summary className="flex items-center justify-between cursor-pointer list-none">
+                    <div>
+                      <p className="text-sm text-[var(--text-secondary)]">{recommendation.tool}</p>
+                      <p className="font-medium text-[var(--text-primary)]">{recommendation.recommendedTool} · {recommendation.recommendedPlan}</p>
+                    </div>
+                    <div className="text-sm font-semibold text-[var(--text-primary)]">{money(recommendation.monthlySavings)}/mo</div>
+                  </summary>
+
+                  <div className="mt-3 border-t border-[var(--panel-border)] pt-3 text-sm text-[var(--text-secondary)]">
+                    <p className="mb-2">{recommendation.rationale}</p>
+                    {finding ? <p className="mb-2">Savings detail: {money(finding.monthlySavings)} monthly / {money(finding.annualSavings)} annual — {finding.title}</p> : null}
+                    <div className="flex gap-2 mt-2">
+                      <Button variant="ghost" size="sm">Copy recommendation</Button>
+                      <Button variant="primary" size="sm">Take action</Button>
+                    </div>
+                  </div>
+                </details>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Actions & shareable summary */}
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <Card>
+            <p className="text-sm font-semibold text-[var(--text-secondary)]">Shareable summary</p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">Copy a concise, professional summary that can be pasted into Slack, email, or a founder update.</p>
+            <div className="mt-4">
+              <ClipboardButton text={shareText} label="Copy share text" />
+            </div>
+          </Card>
+
+          <div>
+            {summary ? (
+              <Card>
+                <p className="text-sm font-semibold text-[var(--text-secondary)]">Executive summary</p>
+                <h4 className="mt-2 font-display text-lg text-[var(--text-primary)]">{summary.headline}</h4>
+                <p className="mt-2 text-sm text-[var(--text-secondary)]">{summary.subheadline}</p>
+                <div className="mt-4">
+                  <LeadCaptureForm
+                    result={result}
+                    summary={summary}
+                    teamSize={draft.teamSize}
+                    tools={draft.tools.map((tool) => ({ tool: tool.tool, plan: tool.plan, spend: tool.monthlySpend, seats: tool.seats }))}
+                  />
+                </div>
+              </Card>
+            ) : null}
+          </div>
+        </div>
+
+        <TrustSystemSection
+          title="Audit methodology"
+          description="The report is explicit about pricing logic, savings logic, limitations, security, and data handling so teams can review the assumptions before taking action."
+          includeCTA={true}
+        />
+
+        {/* Consultation / optimized state banners */}
+        {showCredexConsultation ? (
+          <Card>
+            <p className="text-sm font-semibold text-[var(--warning)]">Consultation recommended</p>
+            <h3 className="mt-2 font-display text-lg text-[var(--text-primary)]">Savings above $500 monthly deserve a deeper review</h3>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">Book a consult to evaluate consolidation, pricing negotiations, or rollout strategy.</p>
+            <div className="mt-4">
+              <Button variant="primary" size="md">Book consultation</Button>
+            </div>
+          </Card>
         ) : null}
 
         {showOptimizedState ? (
-          <div className="mt-8 rounded-[1.75rem] border border-emerald-300/20 bg-emerald-300/10 p-5 backdrop-blur-xl sm:p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.2em] text-emerald-100/90">Optimized state</p>
-            <h2 className="mt-3 font-display text-2xl text-white">Your current setup is already efficient</h2>
-            <p className="mt-3 max-w-3xl text-sm leading-7 text-emerald-50/90 sm:text-base">
-              Savings are under $100 monthly, so the dashboard is optimized for a light-touch review instead of aggressive downsells.
-            </p>
-          </div>
+          <Card>
+            <p className="text-sm font-semibold text-[var(--success)]">Optimized state</p>
+            <h3 className="mt-2 font-display text-lg text-[var(--text-primary)]">Your current setup is already efficient</h3>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">Savings are under $100 monthly — a light review is recommended.</p>
+          </Card>
         ) : null}
-
-        <div className="mt-10 grid gap-4 lg:grid-cols-2">
-          {result.recommendations.map((recommendation, index) => {
-            const finding = result.findings.find((item) => item.tool === recommendation.tool) ?? null;
-
-            return (
-              <article key={`${recommendation.tool}-${index}`} className="rounded-[1.75rem] border border-white/10 bg-slate-950/45 p-5 backdrop-blur-xl sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200/80">{recommendation.tool}</p>
-                    <h3 className="mt-2 font-display text-2xl text-white">{recommendation.recommendedTool}</h3>
-                    <p className="mt-1 text-sm text-slate-300">Recommendation: {recommendation.recommendedPlan}</p>
-                  </div>
-                  <div className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-semibold text-white">
-                    Savings {money(recommendation.monthlySavings)} / mo
-                  </div>
-                </div>
-
-                <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Current plan</p>
-                    <p className="mt-2 text-base font-medium text-white">{draft.tools[index]?.plan || recommendation.recommendedPlan}</p>
-                  </div>
-                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Recommendation</p>
-                    <p className="mt-2 text-base font-medium text-white">
-                      {recommendation.recommendedTool} · {recommendation.recommendedPlan}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Reason</p>
-                  <p className="mt-2 text-sm leading-7 text-slate-300">{recommendation.rationale}</p>
-                </div>
-
-                {finding ? (
-                  <div className="mt-4 rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Savings detail</p>
-                    <p className="mt-2 text-sm leading-7 text-slate-300">
-                      {money(finding.monthlySavings)} monthly and {money(finding.annualSavings)} annual savings from {finding.title.toLowerCase()}.
-                    </p>
-                  </div>
-                ) : null}
-              </article>
-            );
-          })}
-        </div>
-
-        <div className="mt-10 rounded-[1.75rem] border border-white/10 bg-white/5 p-5 backdrop-blur-xl sm:p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200/80">Shareable summary</p>
-              <p className="mt-2 text-sm leading-7 text-slate-300">
-                Copy a concise, professional summary that can be pasted into Slack, email, or a founder update.
-              </p>
-            </div>
-            <ClipboardButton text={shareText} label="Copy share text" />
-          </div>
-        </div>
       </section>
     </main>
   );

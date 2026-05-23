@@ -1,0 +1,100 @@
+/* Centralized design tokens for AI Spend Audit
+   - Typography scale
+   - Spacing (8px grid)
+   - Radius
+   - Shadows
+   - Motion
+   - Neutral SaaS palette
+   - Semantic tokens
+
+   Usage: import this file from global stylesheet and reference variables with var(--token-name).
+*/
+:root {
+  /* Typography (size / line-height) */
+  --type-xxl: 3rem; /* 48px */
+  --type-xl: 2.25rem; /* 36px */
+  --type-lg: 1.5rem; /* 24px */
+  --type-md: 1rem; /* 16px */
+  --type-sm: 0.875rem; /* 14px */
+
+  --leading-xxl: 1.06;
+  --leading-xl: 1.08;
+  --leading-lg: 1.25;
+  --leading-md: 1.5;
+  --leading-sm: 1.4;
+
+  /* Spacing (8px base grid) */
+  --space-0: 0;
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 48px;
+  --space-6: 64px;
+
+  /* Radius */
+  --radius-1: 6px;   /* subtle */
+  --radius-2: 10px;  /* default */
+  --radius-3: 14px;  /* cards */
+
+  /* Shadows (minimal, use sparingly) */
+  --shadow-1: 0 6px 18px rgba(2,6,23,0.45);
+  --shadow-2: 0 10px 30px rgba(2,6,23,0.5);
+
+  /* Motion */
+  --motion-fast: 120ms;
+  --motion-default: 200ms;
+  --motion-slow: 320ms;
+  --motion-ease: cubic-bezier(.2,.9,.2,1);
+
+  /* Palette (neutral-first, restrained accent) */
+  --bg-950: #06070a; /* page background */
+  --surface-900: #0b1116; /* top-level surfaces */
+  --surface-800: #0f1720; /* cards & panels */
+  --card-700: #121820; /* card interior */
+
+  --text-100: #E6EEF8; /* primary text */
+  --text-200: #B8C6D6; /* secondary text */
+  --muted-300: #90A0B3; /* helper text */
+
+  --accent-500: #0066FF; /* primary accent (cta) */
+  --accent-400: #118CFF; /* hover */
+  --accent-300: #49B0FF; /* subtle */
+  --accent-200: rgba(17,140,255,0.16);
+
+  --success-500: #0BA36B;
+  --warning-500: #FFB020;
+  --danger-500: #FF5A5F;
+
+  /* Borders */
+  --border-1: rgba(255,255,255,0.06);
+  --border-2: rgba(255,255,255,0.04);
+
+  /* Semantic tokens */
+  --background: var(--bg-950);
+  --surface: var(--surface-900);
+  --card: var(--card-700);
+  --text-primary: var(--text-100);
+  --text-secondary: var(--text-200);
+  --accent: var(--accent-500);
+  --accent-muted: var(--accent-300);
+  --success: var(--success-500);
+  --warning: var(--warning-500);
+  --danger: var(--danger-500);
+  --focus-ring: var(--accent-400);
+  --panel-border: var(--border-1);
+
+  /* Utility tokens for consistent use */
+  --control-height: 44px;
+}
+
+/* Utility helpers that consume tokens (lightweight, non-intrusive) */
+.token-bg { background-color: var(--background); }
+.token-surface { background-color: var(--surface); }
+.token-card { background-color: var(--card); }
+.token-text { color: var(--text-primary); }
+
+/* Provide a CSS variable fallback map for older components */
+:root[data-theme="light"] {
+  /* Light theme mappings - optional */
+}
