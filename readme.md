@@ -1,50 +1,70 @@
 # AI Spend Audit
 
-Lightweight SaaS scaffold that helps teams audit AI tool spend. Implemented with the App Router, TypeScript, TailwindCSS, React Hook Form + Zod, Zustand (persist), and optional MongoDB-backed sharing.
+AI Spend Audit is a Next.js 15 App Router application that helps founders and engineering teams figure out where their AI spend is going and what they can trim.
 
-Quick start
+## What it does
 
-- Install dependencies:
+- Audits seat-based and usage-based AI tool spend
+- Points out duplicate tools, overprovisioned seats, and easy downgrade opportunities
+- Persists the draft locally in the browser with Zustand
+- Generates shareable result snapshots when database and email providers are configured
+- Includes a public landing page, audit flow, results dashboard, and share route
+
+## Key routes
+
+- `/` - marketing landing page
+- `/audit` - audit intake form
+- `/results` - computed spend audit results
+- `/share/[id]` - public share snapshot
+- `/api/lead-capture` - lead capture and report delivery endpoint
+
+## Stack
+
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS
+- React Hook Form + Zod
+- Zustand persist
+- Mongoose
+- Resend
+
+## Scripts
 
 ```bash
 npm install
-```
-
-- Local dev server:
-
-```bash
 npm run dev
-```
-
-- Production build:
-
-```bash
 npm run build
+npm run test
+npm run test:watch
 npm start
 ```
 
-Tests
+## Environment
 
-- Unit tests run with Vitest:
+See `.env.example` for the full list. Important variables:
 
-```bash
-npm run test
-```
+- `MONGODB_URI` and `MONGODB_DB`
+- `RESEND_API_KEY`
+- `RESEND_FROM_EMAIL`
+- `RESEND_REPLY_TO_EMAIL`
+- `NEXT_PUBLIC_APP_URL`
+- `NEXT_PUBLIC_SHARE_BASE_URL`
 
-Environment variables
+## Docs
 
-See `.env.example` for the canonical list. Important variables:
-- `MONGODB_URI` and `MONGODB_DB` — required for DB-backed share/results and lead capture. If `MONGODB_URI` is not set the app will render a safe "Snapshot unavailable" fallback for share routes.
-- `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `RESEND_REPLY_TO_EMAIL` — email notifications (optional, required for email flow).
-- `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SHARE_BASE_URL` — used to construct public links.
+- [Architecture](ARCHITECTURE.md)
+- [Tests](TESTS.md)
+- [Prompts](PROMPTS.md)
+- [Pricing data](PRICING_DATA.md)
+- [GTM](GTM.md)
+- [Economics](ECONOMICS.md)
+- [Metrics](METRICS.md)
+- [Landing copy](LANDING_COPY.md)
+- [User interviews](USER_INTERVIEWS.md)
+- [Devlog](DEVLOG.md)
+- [Reflection](REFLECTION.md)
 
-Files changed during stabilization
-- `src/features/audit/audit-spend-form.tsx` — fixed hydration/persist loop and numeric registration
-- `src/app/results/page.tsx` — added results route shell
-- `src/app/share/[id]/page.tsx` — added DB error handling and graceful fallback
-- `tsconfig.json` — added `ignoreDeprecations` to silence TS deprecation diagnostics
+## Notes
 
-Notes
-
-- The app uses the Next.js version declared in `package.json` in this workspace. Confirm that CI/staging uses a compatible Node and Next.js version.
-- For production readiness, wire a real MongoDB URI and an email provider; the app will not crash without them but DB-backed features will show fallbacks.
+The repository already includes a legacy lowercase `readme.md`. This file is the canonical README expected by the workspace requirements.

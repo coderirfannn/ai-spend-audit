@@ -27,14 +27,14 @@ export function LandingPage() {
 
           <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:items-center">
             <div>
-              <Badge className="px-3 py-1" tone="muted">See hidden AI savings instantly</Badge>
+              <Badge className="px-3 py-1" tone="muted">Find the AI spend you can actually cut</Badge>
 
               <h1 className="mt-6 max-w-3xl font-display" style={{ fontSize: 'clamp(2rem, 4.5vw, var(--type-xxl))', lineHeight: 'var(--leading-xxl)' }}>
-                AI spend is growing faster than teams realize.
+                Most teams are paying for more AI than they need.
               </h1>
 
               <p className="mt-6 max-w-2xl text-base text-[var(--text-secondary)]" style={{ lineHeight: 'var(--leading-md)' }}>
-                Find duplicate tools, idle seats, and hidden pricing leaks.
+                Use a quick audit to spot duplicate tools, idle seats, and the little pricing leaks that get missed in normal reviews.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -59,7 +59,7 @@ export function LandingPage() {
                   <div>
                     <p className="text-sm font-semibold text-[var(--text-secondary)]">Audit preview</p>
                     <p className="mt-2 font-display text-3xl text-[var(--text-primary)]">$18,400</p>
-                    <p className="mt-2 text-sm text-[var(--text-secondary)]">Projected annual savings from duplicate seats and unused plans.</p>
+                    <p className="mt-2 text-sm text-[var(--text-secondary)]">A quick look at the kind of savings that usually show up when teams trim overlap.</p>
                   </div>
 
                   <div className="hidden md:flex flex-col gap-3">
@@ -140,8 +140,8 @@ export function LandingPage() {
       <Section>
         <div className="mx-auto max-w-3xl text-center rounded-[var(--radius-3)] border border-[var(--panel-border)] bg-[var(--card)] p-[var(--space-3)]">
           <p className="text-sm font-semibold uppercase tracking-wide text-[var(--accent-muted)]">CTA</p>
-          <h2 className="mt-3 font-display text-2xl text-[var(--text-primary)]">Stop the leak before it becomes a habit.</h2>
-          <p className="mt-3 text-sm text-[var(--text-secondary)]">Run the audit, see the savings, and decide what to cut with confidence.</p>
+          <h2 className="mt-3 font-display text-2xl text-[var(--text-primary)]">Check the spend, then decide what stays.</h2>
+          <p className="mt-3 text-sm text-[var(--text-secondary)]">Run the audit, see the savings, and make the next call without staring at a spreadsheet all afternoon.</p>
           <div className="mt-6">
             <Link href="/audit" className="inline-flex items-center justify-center rounded-[var(--radius-2)] bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-[var(--text-primary)]">Audit My Spend</Link>
           </div>

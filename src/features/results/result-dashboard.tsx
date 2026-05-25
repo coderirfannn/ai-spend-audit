@@ -212,38 +212,6 @@ export function ResultDashboard() {
           </Card>
         </div>
 
-        {/* Top opportunities */}
-        <div>
-          <h2 className="font-display text-2xl text-[var(--text-primary)]">Top opportunities</h2>
-          <div className="mt-4 grid gap-4 lg:grid-cols-3">
-            {result.recommendations
-              .slice()
-              .sort((a, b) => b.monthlySavings - a.monthlySavings)
-              .slice(0, 3)
-              .map((rec) => (
-                <Card key={rec.tool} className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm text-[var(--text-secondary)]">{rec.tool}</p>
-                      <h3 className="font-display text-lg text-[var(--text-primary)]">{rec.recommendedTool}</h3>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-lg font-semibold text-[var(--text-primary)]">{money(rec.monthlySavings)}/mo</div>
-                      <p className="text-sm text-[var(--text-secondary)]">Estimated</p>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 text-sm text-[var(--text-secondary)]">{rec.rationale}</div>
-
-                  <div className="mt-3 flex gap-2">
-                    <Button variant="ghost" size="sm">View plan</Button>
-                    <Button variant="primary" size="sm">Apply change</Button>
-                  </div>
-                </Card>
-              ))}
-          </div>
-        </div>
-
         {/* Per-tool accordions */}
         <div>
           <h2 className="font-display text-2xl text-[var(--text-primary)] mt-6">Recommendations & details</h2>

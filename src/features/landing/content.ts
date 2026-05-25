@@ -1,39 +1,39 @@
 export const heroStats = [
-  { value: "$12k", label: "average recoverable annual spend" },
-  { value: "5 min", label: "to get a first-pass audit" },
-  { value: "100%", label: "transparent findings you can share" },
+  { value: "$12k", label: "rough annual spend teams usually miss" },
+  { value: "5 min", label: "to get a first look" },
+  { value: "plain English", label: "so the findings are easy to share" },
 ] as const;
 
 export const benefits = [
   {
-    title: "Find duplicate subscriptions fast",
-    description: "Spot overlapping AI tools, idle seats, and plans that no longer match team usage.",
+    title: "Catch duplicate subscriptions",
+    description: "See overlapping tools, forgotten seats, and plans that no longer fit how the team works.",
   },
   {
-    title: "See waste before it compounds",
-    description: "Catch small monthly leaks early so founder burn stays under control as teams scale.",
+    title: "Notice waste before it adds up",
+    description: "Small monthly leaks are easy to ignore until they start showing up in the burn rate.",
   },
   {
-    title: "Turn spend into decisions",
-    description: "Get a clean read on what to keep, downgrade, consolidate, or cancel.",
+    title: "Turn spend into a short to-do list",
+    description: "Get a clear read on what to keep, downgrade, consolidate, or cut.",
   },
 ] as const;
 
 export const howItWorks = [
   {
     step: "01",
-    title: "Connect your AI stack",
-    description: "List the tools your team uses, from seat-based apps to usage-based APIs.",
+    title: "List the tools you already pay for",
+    description: "Add the seat-based apps and usage-based APIs your team actually touches.",
   },
   {
     step: "02",
-    title: "Run the audit engine",
-    description: "The audit engine checks overlap, underuse, and patterns that signal avoidable spend.",
+    title: "Run the audit",
+    description: "The engine looks for overlap, underuse, and other easy-to-miss spend.",
   },
   {
     step: "03",
-    title: "Review savings actions",
-    description: "See a prioritized plan with the quickest wins and highest-confidence cuts first.",
+    title: "Review the next move",
+    description: "You get a short list of the fastest wins and the cuts that look safest.",
   },
 ] as const;
 
@@ -43,21 +43,21 @@ export const faqs = [
   {
     question: "What does the audit look for?",
     answer:
-      "We focus on duplicated tools, unused seats, overlapping workflows, and signals that point to wasted AI spend.",
+      "Mostly duplicated tools, unused seats, overlapping workflows, and the kind of spend that keeps slipping through reviews.",
   },
   {
     question: "Is this for early-stage teams only?",
     answer:
-      "No. It is designed for founders and operators who want a fast, high-trust view of AI spend across small or growing teams.",
+      "No. It is useful for early-stage teams, but it also works for larger groups that want a quick read on AI spend.",
   },
   {
     question: "Do I need to upload sensitive data?",
     answer:
-      "The landing experience is positioned for a lightweight audit flow, so the first step stays simple and low-friction.",
+      "No sensitive upload is required to get started. The first step stays lightweight on purpose.",
   },
   {
     question: "Can I share the results with my team?",
     answer:
-      "Yes. The product architecture includes a public share route for clean, shareable result snapshots.",
+      "Yes. The results page includes a public share link so you can send the report to the team.",
   },
 ] as const;
